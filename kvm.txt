@@ -1,0 +1,92 @@
+http://absprog.com/qemu_kvm_ubuntu_22.04.html
+Qemu/KVM installation on Ubuntu 22.04
+KVM (or kernel-based virtualization virtual machine) is the Linux built in hypervisor. It uses QEMU as a dependency, and with it we can run virtual machines right from an Ubuntu machine. Let's see how it can be installed and used in Ubuntu 22.04.
+
+Making sure that your CPU supports virtualization
+First, we need to make sure that our CPU supports virtualization. To do that, we can use the lscpu command. This command gathers all kinds of information about the CPU and shows it in one place. Let's start by opening the terminal, then run:
+
+$
+lscpu | grep Virtualization
+Hopefully, you got some output. Usually, you'll get either
+
+Virtualization: VT-x
+
+or
+
+Virtualization: AMD-V
+
+According to your CPU's manufacturer.
+
+lscpu output
+
+If you didn't get any of them, you're out of luck, as your CPU doesn't support virtualization.
+
+But even if you got this output, which means that your CPU supports virtualization, it doesn't mean that virtualization is actually enabled.
+
+Enabling virtualization in the BIOS
+To check if virtualization is actually enable, open your BIOS settings, and make sure that it's on. As an example, here is how it looks like for an Asus computer: Asus Bios screenshot to enable virtualization
+
+Installing KVM
+Now that we know that our system supports virtualization, and is configured to allow it, let's move on to the installation itself. First, let's make sure that our system is up to date, which is good practice before any installation:
+
+$
+sudo apt update
+Then we can go ahead and install qemu and kvm
+
+$
+sudo apt install qemu-kv
+You might wonder why the name of this package is not auto-completed with tab. The reason is that it's a virtual package as can be seen here
+
+qemu-kvm is a virtual package
+
+It means that it's not an actual package - only a common name. The actual package depends on your system's architecture, and as you can see, there are a few options such as x86, Arm and PowerPC.
+
+We also need Libvirt which is a virtualization API and is necessary to do anything useful with KVM
+
+$
+sudo apt install libvirt-daemon-system libvirt-clients
+The next step is adding our user to the kvm group:
+
+$
+sudo adduser $USER kvm
+We then need to restart our system for the group changes to take effect.
+
+$
+reboot
+We can now make sure that our user was actually added to required groups:
+
+$
+groups
+Make sure that the output includes both kvm and libvirt. If it doesn't, you've probably missed something in the previous steps.
+
+To make sure that KVM was properly installed and connected to libvirt, run the following command:
+
+$
+virsh list --all
+You're supposed to get this as your output:
+
+Id Name State
+
+------------------------
+
+Now that KVM was installed, we can move on to installing virt-manager. Virt-manager is the GUI side of things. It allows us to create and interact with our virtual machines via a graphical interface, rather than the command line.
+
+$
+sudo apt install virt-manager
+Once this installation is completed, we're basically done. We can look for virt-manager in the Ubuntu start menu, and if everything worked as expected, you should see something like this: virt manager GUI
+
+Let's now create a virtual machine, just to everything in action. As an example, I'll be creating a Linux Mint VM. First, we need an ISO file. For Linux Mint, it can be found at the Linux Mint download page
+
+Linux Mint download page
+
+Once you download the ISO file, back in virt-manager:
+
+Choose from the menu File->New virtual machine, or just click on the "create new" icon
+Choose the first option: "Local install media"
+Click on "browse" to choose the ISO file
+Click on "Browse local" which appears at the bottom of the dialog and choose the Linux Mint ISO file you downloaded
+KVM may not detect the operating system correctly. In this case, uncheck the "Automatically detect" box and choose Ubuntu from the list (Linux Mint is not among the options, but Ubuntu is close enough)
+Choose how much RAM and CPUs you want to allocate to the VM. As a rule of thumb, never allocate more than half the resources your physical computer has
+Choose how much storage you want to allocate to the VM. For Linux VMs, about 12 GB should be enough, but I wouldn't recommend to go lower than that
+Name your VM and click on finish
+Once we're done with all of these steps, the virtual machine will start, and you'll get a live session to your new Linux Mint VM. If you want to actually install Linux Mint, click on the Install icon on the desktop and follow the installation steps.
