@@ -1,87 +1,81 @@
-# Expert System on Employee Performance Evaluation
-class Evaluation:
-    def __init__(self) -> None:
-        self.name = input("Enter name of employee: ")
-        self.competencies = {
-            "Communication": [0, 0, 0],
-            "Productivity": [0, 0, 0],
-            "Creativity": [0, 0, 0],
-            "Integrity": [0, 0, 0],
-            "Punctuality": [0, 0, 0]
-        }
-        self.performance = {
-            "Goal 1": [0, 0, 0],
-            "Goal 2": [0, 0, 0],
-            "Goal 3": [0, 0, 0],
-            "Goal 4": [0, 0, 0],
-            "Goal 5": [0, 0, 0]
-        }
+print('Welcome to COVID-19 Expert system')
+covidCounter=0
+severity=0
+asym=0
+oxylevel=0
+temp=0
 
-    def printTable(self, hashMap: dict):
-        if hashMap == self.competencies:
-            print("Competency Goals")
-            print("Competency\t\tRating\tWeightage\tWeighted Score")
-            for key, value in self.competencies.items():
-                print(f"{key}\t\t{value[0]}\t{value[1]}\t\t{value[2]}")
-            print()
+questions = ['What is your body temparature',
+'What is your oxygen level',
+'How many vaccines have you taken',
+'What is your age']
+
+yesnoqs=['Do you have cough and cold',
+'Are you able to recognize smell and taste',
+'Are you suffering from sore throat',
+'Are you suffering from headache',
+'Are you suffering from BP/ diabetes',
+'Have you come in a contact of a Covid suspicious person']
+
+for i in range(6):
+    print(yesnoqs[i])
+    print()
+    ans = input()
+    if(ans=='yes'):
+        covidCounter += 1
+
+for i in range(4):
+    print(questions[i])
+    print()
+    if(i==0):
+        ans=float(input())
+        if(ans>=101.0):
+            severity+=2
+            covidCounter+=1
+            temp=1
+        elif(ans<101.0 and ans>=99.6):
+            severity+=1
+    if(i==1):
+        ans=int(input())
+        if(ans>=94):
+            continue
+        elif(ans<94 and ans>87):
+            severity+=1
         else:
-            print("Performance Goals")
-            print("Goals\t\tRating\tWeightage\tWeighted Score")
-            for key, value in self.performance.items():
-                print(f"{key}\t\t{value[0]}\t{value[1]}\t\t{value[2]}")
-            print()
-
-    def input(self):
-        print("Enter rating from 1-3")
-        print("Weightage should be equal to 100")
-        weightTotal = 0
-        for key in self.competencies.keys():
-            self.competencies[key][0] = int(input(f"Enter rating for {key}: "))
-            self.competencies[key][1] = int(input(f"Enter weightage({100 - weightTotal} remaining): "))
-            weightTotal += self.competencies[key][1]
-        for key in self.performance.keys():
-            self.performance[key][0] = int(input(f"Enter rating for {key}: "))
-            self.performance[key][1] = int(input(f"Enter weightage({100 - weightTotal} remaining): "))
-            weightTotal += self.performance[key][1]
-
-    def calcScore(self):
-        for key in self.competencies.keys():
-            self.competencies[key][2] = self.competencies[key][0] * self.competencies[key][1] / 100
-        for key in self.performance.keys():
-            self.performance[key][2] = self.performance[key][0] * self.performance[key][1] / 100
-
-    def calculate(self):
-        self.input()
-        print()
-        self.calcScore()
-        self.printTable(self.competencies)
-
-        sumCompetancy = 0
-        for key in self.competencies.keys():
-            sumCompetancy += self.competencies[key][2]
-        print(f"Sum of weighted scores-Comptency = {sumCompetancy}")
-        print()
-        sumPerformance = 0
-        self.printTable(self.performance)
-        for key in self.performance.keys():
-            sumPerformance += self.performance[key][2]
-        print(f"Sum of weighted scores-Performance = {sumPerformance}")
-        print()
-        total = (sumCompetancy + sumPerformance)
-
-        if total >= 2.7:
-            total = "{:.2f}".format(total)
-            print(f"Overall Rating of {self.name} (out of 3): {total}")
-            print("Employee Exceeds expectations")
-        elif total >= 1.7 and total < 2.7:
-            total = "{:.2f}".format(total)
-            print(f"Overall Rating of {self.name} (out of 3): {total}")
-            print("Employee meets expectations")
+            severity+=2
+            covidCounter+=1
+            oxylevel=1
+    if(i==2):
+        ans=int(input())
+        if(ans==0):
+            severity+=2
+        elif(ans==1):
+            severity+=1
         else:
-            total = "{:.2f}".format(total)
-            print(f"Overall Rating of {self.name} (out of 3): {total}")
-            print("Employee fails expectations")
+            severity+=0
+    if(i==3):
+        ans=int(input())
+        if(ans>12 and ans<31):
+            severity += 0
+        elif(ans>31 and ans<51):
+            severity += 1
+        else:
+            severity += 2
 
-
-obj = Evaluation()
-obj.calculate()
+if(covidCounter>3):
+    print('The patient is probably covid positive')
+    print()
+    if(severity<3):
+        print('It looks like the symptoms are mild\nhome quarantine')
+    elif(severity>=3 and severity<6):
+        print('The patient can get an admission in the general ward')
+    else:
+        print('The patient looks critical')
+else:
+    print('It looks like patient is not Covid positive')
+    print()
+    
+if(oxylevel == 1):
+    print("Keep monitoring patient's oxygen level")
+if(temp == 1):
+    print("Keep monitoring patient's body temperature")
